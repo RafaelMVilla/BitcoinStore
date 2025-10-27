@@ -40,4 +40,5 @@ fun BitcoinStoreTheme(
         typography = Typography,
         content = content
     )
+
 }

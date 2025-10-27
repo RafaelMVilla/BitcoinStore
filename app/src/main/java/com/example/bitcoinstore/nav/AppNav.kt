@@ -9,6 +9,7 @@ import com.example.bitcoinstore.ui.auth.AuthViewModel
 import com.example.bitcoinstore.ui.home.HomeScreen
 import com.example.bitcoinstore.ui.home.ProductDetailScreen
 import com.example.bitcoinstore.ui.home.CartScreen
+import com.example.bitcoinstore.ui.home.CartViewModel
 
 sealed class Route(val path: String) {
     data object Auth : Route("auth")
@@ -22,9 +23,8 @@ sealed class Route(val path: String) {
 }
 
 @Composable
-fun AppNav(authVm: AuthViewModel) {
+fun AppNav(authVm: AuthViewModel, cartVm: CartViewModel) {
     val nav = rememberNavController()
-
     NavHost(navController = nav, startDestination = Route.Auth.path) {
         composable(Route.Auth.path) {
             AuthScreen(vm = authVm) { name ->
@@ -33,7 +33,6 @@ fun AppNav(authVm: AuthViewModel) {
                 }
             }
         }
-
         composable(
             route = Route.Home.path,
             arguments = listOf(navArgument("userName") { type = NavType.StringType })
@@ -45,7 +44,6 @@ fun AppNav(authVm: AuthViewModel) {
                 onCartClick = { nav.navigate(Route.Cart.path) }
             )
         }
-
         composable(
             route = Route.ProductDetail.path,
             arguments = listOf(navArgument("productId") { type = NavType.IntType })
@@ -54,12 +52,12 @@ fun AppNav(authVm: AuthViewModel) {
             ProductDetailScreen(
                 productId = id,
                 onCartClick = { nav.navigate(Route.Cart.path) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                cartVm = cartVm
             )
         }
-
         composable(Route.Cart.path) {
-            CartScreen(onBack = { nav.popBackStack() })
+            CartScreen(cartVm = cartVm, onBack = { nav.popBackStack() })
         }
     }
 }

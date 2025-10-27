@@ -13,13 +13,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.bitcoinstore.R
+import com.example.bitcoinstore.data.local.CartEntity
+import com.example.bitcoinstore.ui.theme.BitcoinOrange
+import com.example.bitcoinstore.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     productId: Int,
     onCartClick: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    cartVm: CartViewModel
 ) {
     val product = when (productId) {
         1 -> Product(1, "Carteira de Bitcoin", "R$ 499,00", R.drawable.prod1)
@@ -31,15 +35,16 @@ fun ProductDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("BitcoinStore") },
+                title = { Text("BitcoinStore", color = White) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = BitcoinOrange),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar", tint = White)
                     }
                 },
                 actions = {
                     IconButton(onClick = onCartClick) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Carrinho")
+                        Icon(Icons.Default.ShoppingCart, contentDescription = "Carrinho", tint = White)
                     }
                 }
             )
@@ -56,20 +61,30 @@ fun ProductDetailScreen(
                 painter = painterResource(id = product.image),
                 contentDescription = product.name,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .height(250.dp)
-                    .fillMaxWidth()
+                modifier = Modifier.height(250.dp).fillMaxWidth()
             )
-
             Spacer(modifier = Modifier.height(16.dp))
             Text(product.name, style = MaterialTheme.typography.titleLarge)
             Text(product.price, color = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.height(8.dp))
             Text("Descrição: Produto de alta qualidade para amantes de criptomoedas!")
-
             Spacer(modifier = Modifier.height(24.dp))
-            Button(onClick = { /* Futuro: adicionar ao carrinho */ }) {
-                Text("Adicionar ao Carrinho")
+            Button(
+                onClick = {
+                    val price = product.price.replace("R$", "").replace(",", ".").trim().toDouble()
+                    val item = CartEntity(
+                        productId = product.id,
+                        name = product.name,
+                        price = price,
+                        description = "Produto de alta qualidade para amantes de criptomoedas!",
+                        quantity = 1,
+                        image = product.image
+                    )
+                    cartVm.addToCart(item)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = BitcoinOrange)
+            ) {
+                Text("Adicionar ao Carrinho", color = White)
             }
         }
     }
