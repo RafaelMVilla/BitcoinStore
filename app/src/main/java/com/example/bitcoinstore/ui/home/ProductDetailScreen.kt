@@ -1,12 +1,11 @@
+// app/src/main/java/com/example/bitcoinstore/ui/home/ProductDetailScreen.kt
 package com.example.bitcoinstore.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -14,6 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.bitcoinstore.R
 import com.example.bitcoinstore.data.local.CartEntity
+import com.example.bitcoinstore.ui.components.AppTopBar
 import com.example.bitcoinstore.ui.theme.BitcoinOrange
 import com.example.bitcoinstore.ui.theme.White
 
@@ -25,6 +25,9 @@ fun ProductDetailScreen(
     onBack: () -> Unit,
     cartVm: CartViewModel
 ) {
+    val state by cartVm.ui.collectAsState()
+    LaunchedEffect(Unit) { cartVm.loadCart() }
+
     val product = when (productId) {
         1 -> Product(1, "Carteira de Bitcoin", "R$ 499,00", R.drawable.prod1)
         2 -> Product(2, "Camisa Bitcoin", "R$ 149,00", R.drawable.prod2)
@@ -34,19 +37,12 @@ fun ProductDetailScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("BitcoinStore", color = White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = BitcoinOrange),
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar", tint = White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onCartClick) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Carrinho", tint = White)
-                    }
-                }
+            AppTopBar(
+                title = "BitcoinStore",
+                showBack = true,
+                onBack = onBack,
+                itemCount = state.itemCount,
+                onCartClick = onCartClick
             )
         }
     ) { padding ->
@@ -61,7 +57,9 @@ fun ProductDetailScreen(
                 painter = painterResource(id = product.image),
                 contentDescription = product.name,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.height(250.dp).fillMaxWidth()
+                modifier = Modifier
+                    .height(250.dp)
+                    .fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(product.name, style = MaterialTheme.typography.titleLarge)
@@ -80,7 +78,7 @@ fun ProductDetailScreen(
                         quantity = 1,
                         image = product.image
                     )
-                    cartVm.addToCart(item)
+                    cartVm.addOne(item)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = BitcoinOrange)
             ) {

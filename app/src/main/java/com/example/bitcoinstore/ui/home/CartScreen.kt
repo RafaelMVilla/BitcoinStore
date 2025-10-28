@@ -2,18 +2,20 @@ package com.example.bitcoinstore.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.bitcoinstore.ui.components.AppTopBar
 import com.example.bitcoinstore.ui.theme.BitcoinOrange
 import com.example.bitcoinstore.ui.theme.White
 
@@ -21,52 +23,75 @@ import com.example.bitcoinstore.ui.theme.White
 @Composable
 fun CartScreen(cartVm: CartViewModel, onBack: () -> Unit) {
     val state by cartVm.ui.collectAsState()
-
     LaunchedEffect(Unit) { cartVm.loadCart() }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Carrinho", color = White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = BitcoinOrange),
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar", tint = White)
-                    }
-                }
+            AppTopBar(
+                title = "BitcoinStore",
+                showBack = true,
+                onBack = onBack,
+                itemCount = state.itemCount,
+                onCartClick = { /* já estamos no carrinho */ }
             )
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-        ) {
-            if (state.items.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Seu carrinho está vazio!")
-                }
-            } else {
-                state.items.forEach { item ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(id = item.image),
-                                contentDescription = item.name,
-                                modifier = Modifier.size(80.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(item.name, fontWeight = FontWeight.Bold)
-                                Text(item.description)
-                                Text("Qtd: ${item.quantity}")
-                                Text("Preço: R$ %.2f".format(item.price))
+        if (state.items.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Seu carrinho está vazio!")
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp)
+            ) {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(state.items.size) { index ->
+                        val item = state.items[index]
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.cardElevation(4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(id = item.image),
+                                    contentDescription = item.name,
+                                    modifier = Modifier.size(80.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(item.name, fontWeight = FontWeight.Bold)
+                                    Text("R$ %.2f".format(item.price))
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        IconButton(onClick = { cartVm.decreaseQuantity(item) }) {
+                                            Icon(Icons.Filled.Remove, contentDescription = "Diminuir")
+                                        }
+                                        Text("${item.quantity}")
+                                        IconButton(onClick = { cartVm.increaseQuantity(item) }) {
+                                            Icon(Icons.Filled.Add, contentDescription = "Aumentar")
+                                        }
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        IconButton(onClick = { cartVm.deleteItem(item) }) {
+                                            Icon(
+                                                Icons.Filled.Delete,
+                                                contentDescription = "Remover",
+                                                tint = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -76,7 +101,7 @@ fun CartScreen(cartVm: CartViewModel, onBack: () -> Unit) {
                 Text("Total: R$ %.2f".format(state.total), style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
-                    onClick = { /* TODO: finalizar compra futuramente */ },
+                    onClick = { /* TODO: Finalizar compra */ },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = BitcoinOrange)
                 ) {

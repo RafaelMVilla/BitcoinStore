@@ -10,7 +10,8 @@ import kotlinx.coroutines.launch
 
 data class CartUiState(
     val items: List<CartEntity> = emptyList(),
-    val total: Double = 0.0
+    val total: Double = 0.0,
+    val itemCount: Int = 0 // soma das quantidades
 )
 
 class CartViewModel(private val repo: CartRepository) : ViewModel() {
@@ -22,13 +23,36 @@ class CartViewModel(private val repo: CartRepository) : ViewModel() {
         viewModelScope.launch {
             val list = repo.getCart()
             val total = list.sumOf { it.price * it.quantity }
-            _ui.value = CartUiState(list, total)
+            val count = list.sumOf { it.quantity }
+            _ui.value = CartUiState(list, total, count)
         }
     }
 
-    fun addToCart(item: CartEntity) {
+    // usado na tela de produto (adiciona 1 unidade)
+    fun addOne(item: CartEntity) {
         viewModelScope.launch {
-            repo.addToCart(item)
+            repo.addOne(item)
+            loadCart()
+        }
+    }
+
+    fun increaseQuantity(item: CartEntity) {
+        viewModelScope.launch {
+            repo.updateQuantity(item.productId, +1)
+            loadCart()
+        }
+    }
+
+    fun decreaseQuantity(item: CartEntity) {
+        viewModelScope.launch {
+            repo.updateQuantity(item.productId, -1) // remove ao chegar a 0
+            loadCart()
+        }
+    }
+
+    fun deleteItem(item: CartEntity) {
+        viewModelScope.launch {
+            repo.deleteItem(item)
             loadCart()
         }
     }

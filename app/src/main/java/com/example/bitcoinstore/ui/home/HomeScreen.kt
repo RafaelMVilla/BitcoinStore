@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/bitcoinstore/ui/home/HomeScreen.kt
 package com.example.bitcoinstore.ui.home
 
 import androidx.compose.foundation.Image
@@ -6,10 +7,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -17,16 +17,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.bitcoinstore.R
+import com.example.bitcoinstore.ui.components.AppTopBar
+import com.example.bitcoinstore.ui.user.UserViewModel
 
 data class Product(val id: Int, val name: String, val price: String, val image: Int)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    userName: String,
+    userEmail: String,
     onProductClick: (Int) -> Unit,
-    onCartClick: () -> Unit
+    onCartClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    cartVm: CartViewModel,
+    userVm: UserViewModel
 ) {
+    val cartState by cartVm.ui.collectAsState()
+    val userState by userVm.ui.collectAsState()
+
+    LaunchedEffect(userEmail) {
+        userVm.load(userEmail)
+        cartVm.loadCart()
+    }
+
+    var query by remember { mutableStateOf("") }
+
     val products = listOf(
         Product(1, "Carteira de Bitcoin", "R$ 499,00", R.drawable.prod1),
         Product(2, "Camisa Bitcoin", "R$ 149,00", R.drawable.prod2),
@@ -34,24 +49,43 @@ fun HomeScreen(
         Product(4, "Mousepad Blockchain", "R$ 69,90", R.drawable.prod4)
     )
 
+    val filtered = remember(query, products) {
+        if (query.isBlank()) products
+        else products.filter { it.name.contains(query, ignoreCase = true) }
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("BitcoinStore") },
-                actions = {
-                    IconButton(onClick = onCartClick) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Carrinho")
-                    }
-                }
+            AppTopBar(
+                title = "BitcoinStore",
+                showBack = false,
+                showProfile = true,
+                onProfileClick = onProfileClick,
+                itemCount = cartState.itemCount,
+                onCartClick = onCartClick
             )
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
+
             Text(
-                text = "Bem-vindo, $userName 👋",
+                text = "Bem-vindo, ${userState.name.ifBlank { "usuário" }} 👋",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(16.dp)
             )
+
+            // 🔎 Barra de Pesquisa
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                label = { Text("Pesquisar produtos") },
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -59,7 +93,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(products) { product ->
+                items(filtered) { product ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()

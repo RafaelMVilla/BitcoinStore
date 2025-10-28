@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/bitcoinstore/data/repo/UserRepository.kt
 package com.example.bitcoinstore.data.repo
 
 import com.example.bitcoinstore.data.local.UserDao
@@ -32,7 +33,18 @@ class UserRepository(private val userDao: UserDao) {
             Result.success(User(user.email, user.name))
         }
 
-    // SHA-256 simples para DEMO (não substituir controles de segurança reais)
+    suspend fun getUser(email: String): User? = withContext(Dispatchers.IO) {
+        userDao.getByEmail(email)?.let { User(it.email, it.name) }
+    }
+
+    suspend fun updateName(email: String, newName: String) = withContext(Dispatchers.IO) {
+        userDao.updateName(email, newName.trim())
+    }
+
+    suspend fun updatePassword(email: String, newPassword: String) = withContext(Dispatchers.IO) {
+        userDao.updatePasswordHash(email, hash(newPassword))
+    }
+
     private fun hash(input: String): String {
         val md = MessageDigest.getInstance("SHA-256")
         val bytes = md.digest(input.toByteArray())

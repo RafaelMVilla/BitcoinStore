@@ -1,9 +1,9 @@
+// app/src/main/java/com/example/bitcoinstore/MainActivity.kt
 package com.example.bitcoinstore
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -14,6 +14,7 @@ import com.example.bitcoinstore.nav.AppNav
 import com.example.bitcoinstore.ui.auth.AuthViewModel
 import com.example.bitcoinstore.ui.home.CartViewModel
 import com.example.bitcoinstore.ui.theme.BitcoinStoreTheme
+import com.example.bitcoinstore.ui.user.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +33,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             )
-
             val cartVm: CartViewModel = viewModel(
                 factory = object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -41,9 +41,17 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             )
+            val userVm: UserViewModel = viewModel(
+                factory = object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        @Suppress("UNCHECKED_CAST")
+                        return UserViewModel(userRepo) as T
+                    }
+                }
+            )
 
             BitcoinStoreTheme {
-                AppNav(authVm, cartVm)
+                AppNav(authVm, cartVm, userVm)
             }
         }
     }

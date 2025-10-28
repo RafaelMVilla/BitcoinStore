@@ -7,14 +7,29 @@ import kotlinx.coroutines.withContext
 
 class CartRepository(private val dao: CartDao) {
 
-    suspend fun addToCart(item: CartEntity) = withContext(Dispatchers.IO) {
-        val existing = dao.getAll().find { it.productId == item.productId }
+    // Adiciona UMA unidade do item (usado na tela de produto)
+    suspend fun addOne(item: CartEntity) = withContext(Dispatchers.IO) {
+        val existing = dao.getByProductId(item.productId)
         if (existing != null) {
-            val updated = existing.copy(quantity = existing.quantity + item.quantity)
-            dao.update(updated)
+            dao.updateQuantityBy(item.productId, 1)
         } else {
-            dao.insert(item)
+            dao.insert(item.copy(quantity = 1))
         }
+    }
+
+    // Atualiza quantidade por delta (+1 ou -1). Remove ao chegar a 0.
+    suspend fun updateQuantity(productId: Int, delta: Int) = withContext(Dispatchers.IO) {
+        val existing = dao.getByProductId(productId) ?: return@withContext
+        val newQty = existing.quantity + delta
+        if (newQty <= 0) {
+            dao.delete(existing)
+        } else {
+            dao.updateQuantityBy(productId, delta)
+        }
+    }
+
+    suspend fun deleteItem(item: CartEntity) = withContext(Dispatchers.IO) {
+        dao.delete(item)
     }
 
     suspend fun getCart(): List<CartEntity> = withContext(Dispatchers.IO) {

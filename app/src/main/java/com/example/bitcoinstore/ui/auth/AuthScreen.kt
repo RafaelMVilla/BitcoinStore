@@ -1,8 +1,10 @@
+// app/src/main/java/com/example/bitcoinstore/ui/auth/AuthScreen.kt
 package com.example.bitcoinstore.ui.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -10,12 +12,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AuthScreen(
     vm: AuthViewModel,
-    onLoggedIn: (String) -> Unit
+    onLoggedIn: (String) -> Unit // agora passamos o EMAIL para a rota
 ) {
     val state by vm.ui.collectAsState()
 
     LaunchedEffect(state.loggedInUser) {
-        state.loggedInUser?.let { onLoggedIn(it.name) }
+        state.loggedInUser?.let { onLoggedIn(it.email) }
     }
 
     Column(
@@ -71,7 +73,6 @@ fun AuthScreen(
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-
 
         Button(
             onClick = vm::submit,
