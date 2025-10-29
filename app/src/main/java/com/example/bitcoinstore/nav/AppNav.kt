@@ -15,6 +15,8 @@ import com.example.bitcoinstore.ui.home.HomeScreen
 import com.example.bitcoinstore.ui.home.ProductDetailScreen
 import com.example.bitcoinstore.ui.user.ProfileScreen
 import com.example.bitcoinstore.ui.user.UserViewModel
+import com.example.bitcoinstore.ui.wallet.WalletScreen
+import com.example.bitcoinstore.ui.wallet.WalletViewModel
 
 sealed class Route(val path: String) {
     data object Auth : Route("auth")
@@ -28,13 +30,15 @@ sealed class Route(val path: String) {
     data object Profile : Route("profile/{userEmail}") {
         fun build(userEmail: String) = "profile/$userEmail"
     }
+    data object Wallet : Route("wallet")
 }
 
 @Composable
 fun AppNav(
     authVm: AuthViewModel,
     cartVm: CartViewModel,
-    userVm: UserViewModel
+    userVm: UserViewModel,
+    walletVm: WalletViewModel
 ) {
     val nav = rememberNavController()
 
@@ -59,6 +63,7 @@ fun AppNav(
                 onProductClick = { id -> nav.navigate(Route.ProductDetail.build(id)) },
                 onCartClick = { nav.navigate(Route.Cart.path) },
                 onProfileClick = { nav.navigate(Route.Profile.build(email)) },
+                onWalletClick = { nav.navigate(Route.Wallet.path) },
                 cartVm = cartVm,
                 userVm = userVm
             )
@@ -73,6 +78,7 @@ fun AppNav(
                 productId = id,
                 onCartClick = { nav.navigate(Route.Cart.path) },
                 onBack = { nav.popBackStack() },
+                onWalletClick = { nav.navigate(Route.Wallet.path) },
                 cartVm = cartVm
             )
         }
@@ -80,7 +86,8 @@ fun AppNav(
         composable(Route.Cart.path) {
             CartScreen(
                 cartVm = cartVm,
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onWalletClick = { nav.navigate(Route.Wallet.path) }
             )
         }
 
@@ -94,14 +101,19 @@ fun AppNav(
                 userVm = userVm,
                 onBack = { nav.popBackStack() },
                 onLogout = {
-                    // ✅ 1) limpa estado de autenticação
                     authVm.logout()
-                    // ✅ 2) volta para Auth e limpa toda a pilha
                     nav.navigate(Route.Auth.path) {
                         popUpTo(nav.graph.findStartDestination().id) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
+            )
+        }
+
+        composable(Route.Wallet.path) {
+            WalletScreen(
+                walletVm = walletVm,
+                onBack = { nav.popBackStack() }
             )
         }
     }

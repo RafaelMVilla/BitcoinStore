@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
@@ -18,10 +19,11 @@ import androidx.compose.ui.unit.dp
 import com.example.bitcoinstore.ui.components.AppTopBar
 import com.example.bitcoinstore.ui.theme.BitcoinOrange
 import com.example.bitcoinstore.ui.theme.White
+import com.example.bitcoinstore.util.CurrencyUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen(cartVm: CartViewModel, onBack: () -> Unit) {
+fun CartScreen(cartVm: CartViewModel, onBack: () -> Unit, onWalletClick: () -> Unit) {
     val state by cartVm.ui.collectAsState()
     LaunchedEffect(Unit) { cartVm.loadCart() }
 
@@ -34,6 +36,11 @@ fun CartScreen(cartVm: CartViewModel, onBack: () -> Unit) {
                 itemCount = state.itemCount,
                 onCartClick = { /* já estamos no carrinho */ }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onWalletClick, containerColor = MaterialTheme.colorScheme.primary) {
+                Icon(Icons.Filled.AccountBalanceWallet, contentDescription = "Carteira", tint = MaterialTheme.colorScheme.onPrimary)
+            }
         }
     ) { padding ->
         if (state.items.isEmpty()) {
@@ -55,6 +62,7 @@ fun CartScreen(cartVm: CartViewModel, onBack: () -> Unit) {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(state.items.size) { index ->
                         val item = state.items[index]
+                        val itemBTC = CurrencyUtils.brlToBtc(item.price)
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             elevation = CardDefaults.cardElevation(4.dp)
@@ -73,7 +81,7 @@ fun CartScreen(cartVm: CartViewModel, onBack: () -> Unit) {
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(item.name, fontWeight = FontWeight.Bold)
-                                    Text("R$ %.2f".format(item.price))
+                                    Text("${CurrencyUtils.formatBRL(item.price)}  •  ${CurrencyUtils.formatBTC(itemBTC)}")
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         IconButton(onClick = { cartVm.decreaseQuantity(item) }) {
                                             Icon(Icons.Filled.Remove, contentDescription = "Diminuir")
@@ -98,7 +106,11 @@ fun CartScreen(cartVm: CartViewModel, onBack: () -> Unit) {
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Total: R$ %.2f".format(state.total), style = MaterialTheme.typography.titleLarge)
+                val totalBTC = CurrencyUtils.brlToBtc(state.total)
+                Text(
+                    "Total: ${CurrencyUtils.formatBRL(state.total)}  •  ${CurrencyUtils.formatBTC(totalBTC)}",
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = { /* TODO: Finalizar compra */ },

@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/MainActivity.kt
 package com.example.bitcoinstore
 
 import android.os.Bundle
@@ -10,11 +9,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bitcoinstore.data.CartRepository
 import com.example.bitcoinstore.data.local.AppDatabase
 import com.example.bitcoinstore.data.repo.UserRepository
+import com.example.bitcoinstore.data.repo.WalletRepository
 import com.example.bitcoinstore.nav.AppNav
 import com.example.bitcoinstore.ui.auth.AuthViewModel
 import com.example.bitcoinstore.ui.home.CartViewModel
 import com.example.bitcoinstore.ui.theme.BitcoinStoreTheme
 import com.example.bitcoinstore.ui.user.UserViewModel
+import com.example.bitcoinstore.ui.wallet.WalletViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
         val db = AppDatabase.get(this)
         val userRepo = UserRepository(db.userDao())
         val cartRepo = CartRepository(db.cartDao())
+        val walletRepo = WalletRepository(db.walletDao())
 
         setContent {
             val authVm: AuthViewModel = viewModel(
@@ -49,9 +51,17 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             )
+            val walletVm: WalletViewModel = viewModel(
+                factory = object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        @Suppress("UNCHECKED_CAST")
+                        return WalletViewModel(walletRepo) as T
+                    }
+                }
+            )
 
             BitcoinStoreTheme {
-                AppNav(authVm, cartVm, userVm)
+                AppNav(authVm, cartVm, userVm, walletVm)
             }
         }
     }

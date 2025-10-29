@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/home/HomeScreen.kt
 package com.example.bitcoinstore.ui.home
 
 import androidx.compose.foundation.Image
@@ -7,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
@@ -19,8 +20,9 @@ import androidx.compose.ui.unit.dp
 import com.example.bitcoinstore.R
 import com.example.bitcoinstore.ui.components.AppTopBar
 import com.example.bitcoinstore.ui.user.UserViewModel
+import com.example.bitcoinstore.util.CurrencyUtils
 
-data class Product(val id: Int, val name: String, val price: String, val image: Int)
+data class Product(val id: Int, val name: String, val priceBRL: Double, val image: Int)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +31,7 @@ fun HomeScreen(
     onProductClick: (Int) -> Unit,
     onCartClick: () -> Unit,
     onProfileClick: () -> Unit,
+    onWalletClick: () -> Unit,
     cartVm: CartViewModel,
     userVm: UserViewModel
 ) {
@@ -43,10 +46,10 @@ fun HomeScreen(
     var query by remember { mutableStateOf("") }
 
     val products = listOf(
-        Product(1, "Carteira de Bitcoin", "R$ 499,00", R.drawable.prod1),
-        Product(2, "Camisa Bitcoin", "R$ 149,00", R.drawable.prod2),
-        Product(3, "Boné Crypto", "R$ 89,90", R.drawable.prod3),
-        Product(4, "Mousepad Blockchain", "R$ 69,90", R.drawable.prod4)
+        Product(1, "Carteira de Bitcoin", 499.00, R.drawable.prod1),
+        Product(2, "Camisa Bitcoin", 149.00, R.drawable.prod2),
+        Product(3, "Boné Crypto", 89.90, R.drawable.prod3),
+        Product(4, "Mousepad Blockchain", 69.90, R.drawable.prod4)
     )
 
     val filtered = remember(query, products) {
@@ -64,6 +67,11 @@ fun HomeScreen(
                 itemCount = cartState.itemCount,
                 onCartClick = onCartClick
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onWalletClick, containerColor = MaterialTheme.colorScheme.primary) {
+                Icon(Icons.Filled.AccountBalanceWallet, contentDescription = "Carteira", tint = MaterialTheme.colorScheme.onPrimary)
+            }
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
@@ -74,7 +82,6 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp)
             )
 
-            // 🔎 Barra de Pesquisa
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -94,6 +101,7 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(filtered) { product ->
+                    val btc = CurrencyUtils.brlToBtc(product.priceBRL)
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -114,7 +122,10 @@ fun HomeScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(product.name, fontWeight = FontWeight.Bold)
-                            Text(product.price, color = MaterialTheme.colorScheme.primary)
+                            Text(
+                                text = "${CurrencyUtils.formatBRL(product.priceBRL)}  •  ${CurrencyUtils.formatBTC(btc)}",
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         }
                     }
                 }
