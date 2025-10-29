@@ -11,26 +11,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.bitcoinstore.ui.components.AppTopBar
+import com.example.bitcoinstore.ui.home.CartViewModel
 import com.example.bitcoinstore.ui.theme.BitcoinOrange
 import com.example.bitcoinstore.ui.theme.White
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     userEmail: String,
     userVm: UserViewModel,
+    cartVm: CartViewModel,        // ✅ recebemos o VM do carrinho
     onBack: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onCartClick: () -> Unit       // ✅ ação do carrinho
 ) {
-    val state by userVm.ui.collectAsState()
-    LaunchedEffect(userEmail) { userVm.load(userEmail) }
+    val userState by userVm.ui.collectAsState()
+    val cartState by cartVm.ui.collectAsState()   // ✅ para ler itemCount
+    LaunchedEffect(userEmail) {
+        userVm.load(userEmail)
+        // garante que o badge esteja atualizado
+        cartVm.loadCart()
+    }
 
     var editing by remember { mutableStateOf(false) }
     var tempName by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
 
-    LaunchedEffect(state.name) {
-        if (!editing) tempName = state.name
+    LaunchedEffect(userState.name) {
+        if (!editing) tempName = userState.name
     }
 
     Scaffold(
@@ -39,8 +48,8 @@ fun ProfileScreen(
                 title = "BitcoinStore",
                 showBack = true,
                 onBack = onBack,
-                itemCount = 0, // badge do carrinho não é necessário aqui (poderia ser passado se quiser)
-                onCartClick = onBack // sem ação de carrinho (ou poderia navegar)
+                itemCount = cartState.itemCount,   // ✅ mostra o badge real
+                onCartClick = onCartClick          // ✅ leva ao carrinho
             )
         }
     ) { padding ->
@@ -51,10 +60,10 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text("Minha conta", style = MaterialTheme.typography.titleLarge)
-            Text("E-mail: ${state.email}")
+            Text("E-mail: ${userState.email}")
 
             OutlinedTextField(
-                value = if (editing) tempName else state.name,
+                value = if (editing) tempName else userState.name,
                 onValueChange = { if (editing) tempName = it },
                 label = { Text("Nome") },
                 enabled = editing,
@@ -95,7 +104,7 @@ fun ProfileScreen(
                     ) {
                         Text("Salvar", color = White)
                     }
-                    OutlinedButton(onClick = { editing = false; newPassword = ""; tempName = state.name }) {
+                    OutlinedButton(onClick = { editing = false; newPassword = ""; tempName = userState.name }) {
                         Text("Cancelar")
                     }
                 }
@@ -103,23 +112,20 @@ fun ProfileScreen(
 
             Divider()
 
-            OutlinedButton(
-                onClick = onLogout
-            ) {
+            OutlinedButton(onClick = onLogout) {
                 Icon(Icons.Filled.Logout, contentDescription = "Sair")
                 Spacer(Modifier.width(8.dp))
                 Text("Sair da conta")
             }
 
-            if (state.message != null) {
-                val isSuccess = !state.message!!.contains("erro", ignoreCase = true)
+            userState.message?.let {
+                val isSuccess = !it.contains("erro", ignoreCase = true)
                 Text(
-                    text = state.message!!,
+                    text = it,
                     color = if (isSuccess) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error
                 )
-                LaunchedEffect(state.message) {
-                    // limpa mensagem de feedback após um tempo
-                    kotlinx.coroutines.delay(2000)
+                LaunchedEffect(it) {
+                    delay(2000)
                     userVm.clearMessage()
                 }
             }

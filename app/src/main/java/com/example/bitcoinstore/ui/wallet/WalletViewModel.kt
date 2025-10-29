@@ -36,6 +36,18 @@ class WalletViewModel(private val repo: WalletRepository) : ViewModel() {
         }
     }
 
+    /** Debita em BTC. Retorna true se pagou, false se saldo insuficiente. */
+    suspend fun payWithBTC(amountBtc: BigDecimal): Boolean {
+        val amountSats = CurrencyUtils.btcToSats(amountBtc)
+        val ok = repo.trySpendSats(amountSats)
+        if (ok) {
+            // atualiza estado
+            val newBal = repo.getBalanceSats()
+            _ui.value = _ui.value.copy(balanceSats = newBal, message = "Pagamento em BTC concluído!")
+        }
+        return ok
+    }
+
     fun clearMessage() {
         _ui.value = _ui.value.copy(message = null)
     }
