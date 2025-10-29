@@ -183,7 +183,7 @@ fun CheckoutScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = BitcoinOrange)
                     ) {
-                        Text("Pix realizado", color = White)
+                        Text("Validar Pix", color = White)
                     }
                     Spacer(Modifier.height(12.dp))
                     TextButton(onClick = { pixWaiting = false }) {

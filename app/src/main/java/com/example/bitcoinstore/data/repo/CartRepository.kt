@@ -1,4 +1,4 @@
-package com.example.bitcoinstore.data
+package com.example.bitcoinstore.data.repo
 
 import com.example.bitcoinstore.data.local.CartDao
 import com.example.bitcoinstore.data.local.CartEntity

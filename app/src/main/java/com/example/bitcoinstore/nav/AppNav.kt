@@ -35,7 +35,6 @@ sealed class Route(val path: String) {
     data object Wallet : Route("wallet/{userEmail}") {
         fun build(userEmail: String) = "wallet/$userEmail"
     }
-
     data object Success : Route("success/{method}") {
         fun build(method: String) = "success/$method"
     }
@@ -109,8 +108,12 @@ fun AppNav(
                 cartVm = cartVm,
                 onBack = { nav.popBackStack() },
                 onLogout = {
+                    authVm.logout()
+                    cartVm.clearCart()
+
                     nav.navigate(Route.Auth.path) {
-                        popUpTo(Route.Auth.path) { inclusive = true }
+                        popUpTo(0)
+                        launchSingleTop = true
                     }
                 },
                 onCartClick = { nav.navigate(Route.Cart.path) }
@@ -134,7 +137,6 @@ fun AppNav(
                 onBack = { nav.popBackStack() },
                 onSuccess = { method: PayMethod ->
                     nav.navigate(Route.Success.build(method.name.lowercase())) {
-
                         launchSingleTop = true
                     }
                 }

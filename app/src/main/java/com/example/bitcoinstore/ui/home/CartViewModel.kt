@@ -2,7 +2,7 @@ package com.example.bitcoinstore.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bitcoinstore.data.CartRepository
+import com.example.bitcoinstore.data.repo.CartRepository
 import com.example.bitcoinstore.data.local.CartEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

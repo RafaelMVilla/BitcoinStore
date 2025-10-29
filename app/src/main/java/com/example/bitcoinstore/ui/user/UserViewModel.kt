@@ -3,7 +3,6 @@ package com.example.bitcoinstore.ui.user
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bitcoinstore.data.repo.UserRepository
-import com.example.bitcoinstore.domain.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

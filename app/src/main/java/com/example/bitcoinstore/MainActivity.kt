@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.bitcoinstore.data.CartRepository
+import com.example.bitcoinstore.data.repo.CartRepository
 import com.example.bitcoinstore.data.local.AppDatabase
 import com.example.bitcoinstore.data.repo.UserRepository
 import com.example.bitcoinstore.data.repo.WalletRepository
