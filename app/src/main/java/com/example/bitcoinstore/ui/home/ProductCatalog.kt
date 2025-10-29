@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/home/ProductCatalog.kt
 package com.example.bitcoinstore.ui.home
 
 import com.example.bitcoinstore.R
@@ -10,7 +9,7 @@ data class Product(
     val image: Int,
     val description: String,
     val tags: List<String> = emptyList(),
-    val rating: Double = 4.6 // 0.0..5.0
+    val rating: Double = 4.6
 )
 
 object ProductCatalog {

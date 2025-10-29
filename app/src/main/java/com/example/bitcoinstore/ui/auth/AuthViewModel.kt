@@ -73,7 +73,6 @@ class AuthViewModel(private val repo: UserRepository) : ViewModel() {
         }
     }
 
-    /** ✅ Limpa o usuário e volta para o modo de login */
     fun logout() {
         _ui.value = AuthUiState(isSignUp = false)
     }

@@ -17,7 +17,6 @@ class WalletRepository(private val dao: WalletDao) {
         dao.upsert(current.copy(balanceSats = sats))
     }
 
-    /** Tenta debitar; retorna true se conseguiu, false se saldo insuficiente */
     suspend fun trySpendSats(amountSats: Long): Boolean = withContext(Dispatchers.IO) {
         val cur = dao.get() ?: WalletEntity(id = 1, balanceSats = 0L)
         if (cur.balanceSats >= amountSats) {
@@ -28,6 +27,5 @@ class WalletRepository(private val dao: WalletDao) {
         }
     }
 
-    /** Apenas para simular latência de rede, se quiser usar no PIX */
     suspend fun simulateDelay(ms: Long = 800L) = withContext(Dispatchers.IO) { delay(ms) }
 }

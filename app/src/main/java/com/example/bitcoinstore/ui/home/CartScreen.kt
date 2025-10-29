@@ -25,7 +25,7 @@ import com.example.bitcoinstore.util.CurrencyUtils
 fun CartScreen(
     cartVm: CartViewModel,
     onBack: () -> Unit,
-    onCheckout: () -> Unit // 👈 novo: navega para a tela de checkout
+    onCheckout: () -> Unit
 ) {
     val state by cartVm.ui.collectAsState()
     LaunchedEffect(Unit) { cartVm.loadCart() }
@@ -43,7 +43,7 @@ fun CartScreen(
                 onCartClick = { /* estamos no carrinho */ }
             )
         },
-        // 🔽 Rodapé fixo com total e botão
+
         bottomBar = {
             if (state.items.isNotEmpty()) {
                 Surface(tonalElevation = 3.dp) {
@@ -90,14 +90,13 @@ fun CartScreen(
                 Text("Seu carrinho está vazio!")
             }
         } else {
-            // 🔽 Lista rolável com espaço extra no fim para não “bater” no rodapé
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
                 contentPadding = PaddingValues(
                     start = 16.dp, end = 16.dp, top = 16.dp,
-                    bottom = 120.dp // deixa espaço para o bottomBar
+                    bottom = 120.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {

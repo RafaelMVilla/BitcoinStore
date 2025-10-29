@@ -6,13 +6,11 @@ import java.text.NumberFormat
 import java.util.Locale
 
 object CurrencyUtils {
-    // Taxa fixa para simulação: 1 BTC = R$ 600.000,00
     const val BRL_PER_BTC = 600_000.0
     private val nfBRL = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
 
     fun formatBRL(value: Double): String = nfBRL.format(value)
 
-    /** Formata BTC com 8 casas e símbolo ₿ */
     fun formatBTC(btc: BigDecimal): String {
         val fixed = btc.setScale(8, RoundingMode.DOWN)
         return "₿ $fixed"

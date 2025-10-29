@@ -16,7 +16,7 @@ import com.example.bitcoinstore.ui.theme.White
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SuccessPaymentScreen(
-    method: String,              // "pix" ou "btc"
+    method: String,
     onGoHome: () -> Unit
 ) {
     val title = when (method.lowercase()) {
@@ -31,7 +31,7 @@ fun SuccessPaymentScreen(
             AppTopBar(
                 title = "Pagamento",
                 showBack = false,
-                onCartClick = onGoHome, // ícone do carrinho volta pra Home
+                onCartClick = onGoHome,
                 itemCount = 0
             )
         }

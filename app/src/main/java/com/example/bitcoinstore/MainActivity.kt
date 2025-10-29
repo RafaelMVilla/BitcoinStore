@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
         val db = AppDatabase.get(this)
         val userRepo = UserRepository(db.userDao())
         val cartRepo = CartRepository(db.cartDao())
-        // ✅ Passa o DAO correto para o repositório da carteira
         val walletRepo = WalletRepository(db.walletDao())
 
         setContent {

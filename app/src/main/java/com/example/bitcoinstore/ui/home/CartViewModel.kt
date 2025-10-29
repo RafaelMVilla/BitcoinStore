@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 data class CartUiState(
     val items: List<CartEntity> = emptyList(),
     val total: Double = 0.0,
-    val itemCount: Int = 0 // soma das quantidades
+    val itemCount: Int = 0
 )
 
 class CartViewModel(private val repo: CartRepository) : ViewModel() {
@@ -28,7 +28,6 @@ class CartViewModel(private val repo: CartRepository) : ViewModel() {
         }
     }
 
-    // usado na tela de produto (adiciona 1 unidade)
     fun addOne(item: CartEntity) {
         viewModelScope.launch {
             repo.addOne(item)
@@ -45,7 +44,7 @@ class CartViewModel(private val repo: CartRepository) : ViewModel() {
 
     fun decreaseQuantity(item: CartEntity) {
         viewModelScope.launch {
-            repo.updateQuantity(item.productId, -1) // remove ao chegar a 0
+            repo.updateQuantity(item.productId, -1)
             loadCart()
         }
     }

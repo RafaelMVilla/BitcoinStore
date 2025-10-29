@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/wallet/WalletScreen.kt
 package com.example.bitcoinstore.ui.wallet
 
 import androidx.compose.foundation.layout.Arrangement
@@ -55,7 +54,6 @@ fun WalletScreen(
     val currentBtc = CurrencyUtils.satsToBtc(state.balanceSats)
     val currentBRL = CurrencyUtils.btcToBRL(currentBtc)
 
-    // Prévia da conversão do que o usuário digitou
     val previewBtc = runCatching {
         if (input.isBlank()) null
         else BigDecimal(input).setScale(8, RoundingMode.DOWN)
@@ -88,7 +86,6 @@ fun WalletScreen(
             OutlinedTextField(
                 value = input,
                 onValueChange = { v ->
-                    // permite apenas dígitos e ponto; limita a 8 casas decimais
                     val ok = v.matches(Regex("^\\d*(?:\\.\\d{0,8})?$"))
                     if (ok && v.length <= 20) {
                         input = v

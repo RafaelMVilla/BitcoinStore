@@ -7,7 +7,6 @@ import kotlinx.coroutines.withContext
 
 class CartRepository(private val dao: CartDao) {
 
-    // Adiciona UMA unidade do item (usado na tela de produto)
     suspend fun addOne(item: CartEntity) = withContext(Dispatchers.IO) {
         val existing = dao.getByProductId(item.productId)
         if (existing != null) {
@@ -17,7 +16,6 @@ class CartRepository(private val dao: CartDao) {
         }
     }
 
-    // Atualiza quantidade por delta (+1 ou -1). Remove ao chegar a 0.
     suspend fun updateQuantity(productId: Int, delta: Int) = withContext(Dispatchers.IO) {
         val existing = dao.getByProductId(productId) ?: return@withContext
         val newQty = existing.quantity + delta

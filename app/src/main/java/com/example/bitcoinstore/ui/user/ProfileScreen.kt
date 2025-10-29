@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/user/ProfileScreen.kt
 package com.example.bitcoinstore.ui.user
 
 import androidx.compose.foundation.layout.*
@@ -21,16 +20,15 @@ import kotlinx.coroutines.delay
 fun ProfileScreen(
     userEmail: String,
     userVm: UserViewModel,
-    cartVm: CartViewModel,        // ✅ recebemos o VM do carrinho
+    cartVm: CartViewModel,
     onBack: () -> Unit,
     onLogout: () -> Unit,
-    onCartClick: () -> Unit       // ✅ ação do carrinho
+    onCartClick: () -> Unit
 ) {
     val userState by userVm.ui.collectAsState()
-    val cartState by cartVm.ui.collectAsState()   // ✅ para ler itemCount
+    val cartState by cartVm.ui.collectAsState()
     LaunchedEffect(userEmail) {
         userVm.load(userEmail)
-        // garante que o badge esteja atualizado
         cartVm.loadCart()
     }
 
@@ -48,8 +46,8 @@ fun ProfileScreen(
                 title = "BitcoinStore",
                 showBack = true,
                 onBack = onBack,
-                itemCount = cartState.itemCount,   // ✅ mostra o badge real
-                onCartClick = onCartClick          // ✅ leva ao carrinho
+                itemCount = cartState.itemCount,
+                onCartClick = onCartClick
             )
         }
     ) { padding ->

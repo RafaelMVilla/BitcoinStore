@@ -25,7 +25,7 @@ fun CheckoutScreen(
     cartVm: CartViewModel,
     walletVm: WalletViewModel,
     onBack: () -> Unit,
-    onSuccess: (PayMethod) -> Unit   // ✅ novo callback
+    onSuccess: (PayMethod) -> Unit
 ) {
     val cartState by cartVm.ui.collectAsState()
     val scope = rememberCoroutineScope()
@@ -93,7 +93,7 @@ fun CheckoutScreen(
                                             val ok = walletVm.payWithBTC(totalBTC)
                                             if (ok) {
                                                 cartVm.clearCart()
-                                                onSuccess(PayMethod.BTC)   // ✅ sucesso BTC
+                                                onSuccess(PayMethod.BTC)
                                             } else {
                                                 message = "Saldo insuficiente na carteira."
                                             }
@@ -153,7 +153,7 @@ fun CheckoutScreen(
             }
         }
 
-        // Overlay do PIX: ao confirmar, limpa o carrinho e vai para a tela de sucesso
+
         if (pixWaiting) {
             Surface(
                 tonalElevation = 6.dp,
@@ -179,7 +179,7 @@ fun CheckoutScreen(
                         onClick = {
                             pixWaiting = false
                             cartVm.clearCart()
-                            onSuccess(PayMethod.PIX)      // ✅ sucesso PIX
+                            onSuccess(PayMethod.PIX)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = BitcoinOrange)
                     ) {
@@ -193,7 +193,7 @@ fun CheckoutScreen(
             }
         }
 
-        // Snackbar
+
         message?.let {
             LaunchedEffect(it) {
                 kotlinx.coroutines.delay(2000)

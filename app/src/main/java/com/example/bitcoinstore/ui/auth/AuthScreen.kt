@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/auth/AuthScreen.kt
 package com.example.bitcoinstore.ui.auth
 
 import androidx.compose.foundation.layout.*
@@ -12,7 +11,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AuthScreen(
     vm: AuthViewModel,
-    onLoggedIn: (String) -> Unit // agora passamos o EMAIL para a rota
+    onLoggedIn: (String) -> Unit
 ) {
     val state by vm.ui.collectAsState()
 

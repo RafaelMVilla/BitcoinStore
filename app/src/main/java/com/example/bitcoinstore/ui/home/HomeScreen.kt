@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/home/HomeScreen.kt
 package com.example.bitcoinstore.ui.home
 
 import androidx.compose.foundation.Image
@@ -151,7 +150,6 @@ private fun ProductCard(product: Product, onClick: () -> Unit) {
 
             Text(product.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
 
-            // preço BRL + BTC
             val btc = CurrencyUtils.brlToBtc(product.priceBRL)
             Text(
                 text = "${CurrencyUtils.formatBRL(product.priceBRL)}  •  ${CurrencyUtils.formatBTC(btc)}",
@@ -160,7 +158,6 @@ private fun ProductCard(product: Product, onClick: () -> Unit) {
 
             Spacer(Modifier.height(6.dp))
 
-            // rating
             RatingRow(rating = product.rating)
 
             FlowRow(
@@ -173,7 +170,6 @@ private fun ProductCard(product: Product, onClick: () -> Unit) {
 
             Spacer(Modifier.height(6.dp))
 
-            // descrição curtinha (uma linha)
             Text(
                 text = product.description,
                 style = MaterialTheme.typography.bodySmall,

@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/user/UserViewModel.kt
 package com.example.bitcoinstore.ui.user
 
 import androidx.lifecycle.ViewModel

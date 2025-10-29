@@ -35,7 +35,7 @@ sealed class Route(val path: String) {
     data object Wallet : Route("wallet/{userEmail}") {
         fun build(userEmail: String) = "wallet/$userEmail"
     }
-    // ✅ nova rota de sucesso com o método (pix/btc)
+
     data object Success : Route("success/{method}") {
         fun build(method: String) = "success/$method"
     }
@@ -127,7 +127,6 @@ fun AppNav(
             )
         }
 
-        // ✅ Checkout agora navega para a tela de sucesso
         composable(Route.Checkout.path) {
             CheckoutScreen(
                 cartVm = cartVm,
@@ -135,14 +134,13 @@ fun AppNav(
                 onBack = { nav.popBackStack() },
                 onSuccess = { method: PayMethod ->
                     nav.navigate(Route.Success.build(method.name.lowercase())) {
-                        // evita empilhar várias telas de sucesso
+
                         launchSingleTop = true
                     }
                 }
             )
         }
 
-        // ✅ Tela de sucesso: ao clicar no botão, voltamos para a Home existente na pilha
         composable(
             route = Route.Success.path,
             arguments = listOf(navArgument("method") { type = NavType.StringType })
@@ -151,7 +149,6 @@ fun AppNav(
             SuccessPaymentScreen(
                 method = method,
                 onGoHome = {
-                    // volta até a Home (que já está na pilha com o e-mail)
                     nav.popBackStack(Route.Home.path, inclusive = false)
                 }
             )

@@ -43,7 +43,6 @@ fun PixPaymentScreen(
 
             if (awaiting) {
                 Text("Aguardando pagamento…")
-                // (Aqui você poderia mostrar um QR de exemplo/placeholder)
                 Button(
                     onClick = { awaiting = false },
                     colors = ButtonDefaults.buttonColors(containerColor = BitcoinOrange)

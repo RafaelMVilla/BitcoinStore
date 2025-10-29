@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/home/ProductComponents.kt
 package com.example.bitcoinstore.ui.home
 
 import androidx.compose.foundation.layout.*
@@ -17,8 +16,8 @@ fun TagChipSmall(text: String) {
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelSmall, // menor
-            maxLines = 1,                 // não quebra dentro do chip
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
         )

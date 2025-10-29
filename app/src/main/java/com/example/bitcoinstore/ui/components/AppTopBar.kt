@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/bitcoinstore/ui/components/AppTopBar.kt
 package com.example.bitcoinstore.ui.components
 
 import androidx.compose.foundation.layout.Box
